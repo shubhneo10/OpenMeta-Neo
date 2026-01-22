@@ -1,0 +1,563 @@
+# ===============================================================================
+# ATOM_CONTEXT_INVESTMENT_GOAL_001
+# Wealth Management Domain - Investment Goal Context with Business Intelligence
+# ===============================================================================
+# This Context Atom embeds business rules for investment goal types.
+# It contains prescriptive rules governing target returns, time horizons,
+# asset allocation strategies, and milestone tracking for each goal type.
+# ===============================================================================
+
+# ===============================================================================
+# SECTION 1: IDENTITY
+# ===============================================================================
+
+identity:
+  id: "ATOM_CONTEXT_INVESTMENT_GOAL_001"
+  type: "ATOM"
+  subtype: "Context"
+  name: "investment_goal_context"
+  display_name: "Investment Goal Rules"
+
+  synonyms:
+    - "investment goal"
+    - "financial goal"
+    - "goal type"
+    - "investment objective"
+    - "retirement"
+    - "education"
+    - "wealth creation"
+    - "emergency fund"
+    - "home purchase"
+
+  description: >
+    Investment goal classification with embedded business intelligence including
+    recommended asset allocations, target return expectations, time horizon
+    requirements, milestone tracking rules, and priority-based contribution
+    strategies. Enables goal-based portfolio construction and progress monitoring.
+
+  version: "1.0"
+  owner: "wealth_management_platform"
+  status: "active"
+
+# ===============================================================================
+# SECTION 1.5: EXECUTION
+# ===============================================================================
+
+execution:
+  type: "sql_assembly"
+  provides: "enrichment"
+  has_data_rows: false
+
+# ===============================================================================
+# SECTION 2: SOURCE
+# ===============================================================================
+
+source:
+  type: "database"
+  connection: "wealth_db"
+  database: "WEALTH_MANAGEMENT"
+  schema: "REFERENCE"
+  table: "InvestmentGoalTypes"
+  primary_key: "goal_type_id"
+
+  refresh_strategy: "static"
+  cache_ttl_seconds: 86400
+
+# ===============================================================================
+# SECTION 3: GOVERNANCE
+# ===============================================================================
+
+governance:
+  sensitivity: "internal"
+  required_roles:
+    - "all_authenticated"
+  data_classification: "reference_data"
+  audit_access: false
+  retention_days: -1
+
+# ===============================================================================
+# SECTION 4: QUALITY
+# ===============================================================================
+
+quality:
+  confidence: 1.0
+  confidence_method: "Authoritative reference data with governance-controlled updates"
+  freshness_sla_minutes: 10080
+  cache_ttl_seconds: 86400
+
+# ===============================================================================
+# SECTION 5: SEMANTICS
+# ===============================================================================
+
+semantics:
+  business_purpose: >
+    Provides prescriptive business intelligence for goal-based investing.
+    Enables automated goal tracking, asset allocation recommendations based
+    on goal type, and progress milestone monitoring.
+
+  use_cases:
+    - "goal_based_portfolio_construction"
+    - "progress_tracking"
+    - "contribution_planning"
+    - "goal_priority_management"
+    - "milestone_alerts"
+
+  sample_questions:
+    - "What is the recommended equity allocation for retirement goals?"
+    - "What is the minimum time horizon for wealth creation goals?"
+    - "What asset allocation is suitable for emergency fund goals?"
+    - "What are the milestone checkpoints for education goals?"
+
+# ===============================================================================
+# SECTION 6: ATTRIBUTES
+# ===============================================================================
+
+attributes:
+  - name: "goal_type_id"
+    display_name: "Goal Type ID"
+    description: "Unique identifier for goal type"
+    type: "string"
+    attribute_type: "identifier"
+    required: true
+    unique: true
+
+  - name: "investment_goal"
+    display_name: "Investment Goal"
+    synonyms: ["goal", "objective", "financial goal"]
+    description: "Investment goal classification name"
+    type: "string"
+    attribute_type: "dimension"
+    required: true
+    filterable: true
+    allowed_values:
+      - "Retirement"
+      - "Education"
+      - "Wealth Creation"
+      - "Emergency Fund"
+      - "Home Purchase"
+      - "Tax Saving"
+    is_enum: true
+
+# ===============================================================================
+# SECTION 7: CONTEXT FIELD
+# ===============================================================================
+
+context_field:
+  name: "investment_goal"
+  maps_to: "InvestorProfiles.investment_goal"
+  join_type: "left"
+  description: "Links to investor's primary investment goal for enrichment"
+
+# ===============================================================================
+# SECTION 8: CONTEXT (THE BUSINESS INTELLIGENCE)
+# ===============================================================================
+
+context:
+  context_type: "business_rules"
+  context_scope: "domain"
+
+  context_values:
+
+    retirement:
+      value: "Retirement"
+      display_name: "Retirement Planning"
+      description: "Long-term wealth accumulation for post-retirement income"
+
+      characteristics:
+        goal_category: "long_term"
+        priority_level: "critical"
+        flexibility: "low"
+        inflation_sensitivity: "high"
+        liquidity_need: "low_until_retirement"
+
+      planning_profile:
+        typical_horizon_years: 25
+        min_horizon_years: 10
+        contribution_pattern: "regular_increasing"
+        withdrawal_pattern: "systematic_post_retirement"
+        corpus_multiple_of_annual_expense: 25
+
+      business_rules:
+        accumulation_equity_pct: 70
+        accumulation_debt_pct: 25
+        accumulation_alternative_pct: 5
+
+        transition_equity_pct: 50
+        transition_debt_pct: 45
+        transition_alternative_pct: 5
+
+        retirement_equity_pct: 30
+        retirement_debt_pct: 65
+        retirement_alternative_pct: 5
+
+        glide_path_start_years_before: 10
+        equity_reduction_per_year_pct: 4
+
+        min_monthly_contribution_pct_of_income: 15
+        recommended_contribution_pct: 25
+        contribution_increase_annual_pct: 10
+
+        preferred_products: ["ELSS", "PPF", "NPS", "Equity Mutual Fund", "Debt Mutual Fund"]
+        tax_efficient_wrappers: ["NPS", "PPF", "ELSS"]
+
+      milestones:
+        - milestone_id: "25_pct_corpus"
+          trigger_pct: 25
+          action: "review_allocation"
+          message: "25% of retirement corpus achieved - review asset allocation"
+
+        - milestone_id: "50_pct_corpus"
+          trigger_pct: 50
+          action: "start_glide_path_planning"
+          message: "Halfway to retirement goal - begin glide path planning"
+
+        - milestone_id: "10_years_to_retirement"
+          trigger_type: "years_remaining"
+          trigger_value: 10
+          action: "initiate_glide_path"
+          message: "10 years to retirement - initiate equity reduction glide path"
+
+      regulatory_context:
+        tax_treatment: "EEE_for_approved_instruments"
+        section_80c_eligible: true
+        nps_additional_deduction: true
+
+    education:
+      value: "Education"
+      display_name: "Education Planning"
+      description: "Goal-dated investment for child's education expenses"
+
+      characteristics:
+        goal_category: "medium_term"
+        priority_level: "high"
+        flexibility: "low"
+        inflation_sensitivity: "very_high"
+        liquidity_need: "specific_dates"
+
+      planning_profile:
+        typical_horizon_years: 15
+        min_horizon_years: 5
+        contribution_pattern: "regular_fixed"
+        withdrawal_pattern: "lump_sum_at_milestones"
+        education_inflation_rate_pct: 10
+
+      business_rules:
+        more_than_10_years_equity_pct: 70
+        more_than_10_years_debt_pct: 25
+
+        five_to_10_years_equity_pct: 50
+        five_to_10_years_debt_pct: 45
+
+        less_than_5_years_equity_pct: 25
+        less_than_5_years_debt_pct: 70
+
+        last_2_years_equity_pct: 10
+        last_2_years_debt_pct: 85
+
+        target_buffer_pct: 15
+        inflation_adjustment_annual: true
+
+        preferred_products: ["Hybrid Fund", "Balanced Advantage Fund", "Debt Mutual Fund", "Sukanya Samriddhi"]
+        avoid_products: ["Sectoral Fund", "Small Cap Fund"]
+
+      milestones:
+        - milestone_id: "school_admission"
+          trigger_type: "custom_date"
+          action: "partial_withdrawal"
+          message: "School admission milestone - funds available for withdrawal"
+
+        - milestone_id: "higher_education"
+          trigger_type: "custom_date"
+          action: "major_withdrawal"
+          message: "Higher education milestone - major corpus withdrawal"
+
+        - milestone_id: "5_years_to_goal"
+          trigger_type: "years_remaining"
+          trigger_value: 5
+          action: "shift_to_conservative"
+          message: "5 years to education goal - shift to conservative allocation"
+
+      regulatory_context:
+        tax_treatment: "standard"
+        section_80c_eligible: false
+        sukanya_eligible: true
+
+    wealth_creation:
+      value: "Wealth Creation"
+      display_name: "Wealth Creation"
+      description: "Long-term wealth building without specific end date"
+
+      characteristics:
+        goal_category: "long_term"
+        priority_level: "medium"
+        flexibility: "high"
+        inflation_sensitivity: "medium"
+        liquidity_need: "optional"
+
+      planning_profile:
+        typical_horizon_years: 20
+        min_horizon_years: 7
+        contribution_pattern: "flexible"
+        withdrawal_pattern: "as_needed"
+        target_cagr_pct: 12
+
+      business_rules:
+        equity_max_pct: 80
+        equity_min_pct: 50
+        debt_max_pct: 40
+        alternative_max_pct: 15
+
+        tactical_deviation_allowed_pct: 10
+        rebalance_frequency_months: 6
+
+        preferred_products: ["Equity Mutual Fund", "Stock", "ETF", "International Fund"]
+        growth_focused: true
+
+      milestones:
+        - milestone_id: "first_10_lakh"
+          trigger_type: "absolute_value"
+          trigger_value: 1000000
+          action: "diversification_review"
+          message: "First 10 lakh milestone - review diversification"
+
+        - milestone_id: "first_crore"
+          trigger_type: "absolute_value"
+          trigger_value: 10000000
+          action: "wealth_protection_review"
+          message: "1 crore milestone - add wealth protection strategies"
+
+      regulatory_context:
+        tax_treatment: "standard_capital_gains"
+        section_80c_eligible: false
+
+    emergency_fund:
+      value: "Emergency Fund"
+      display_name: "Emergency Fund"
+      description: "Highly liquid reserve for unexpected expenses"
+
+      characteristics:
+        goal_category: "short_term"
+        priority_level: "critical"
+        flexibility: "none"
+        inflation_sensitivity: "low"
+        liquidity_need: "immediate"
+
+      planning_profile:
+        typical_horizon_years: 1
+        min_horizon_years: 0
+        contribution_pattern: "until_target"
+        withdrawal_pattern: "emergency_only"
+        target_months_of_expenses: 6
+
+      business_rules:
+        equity_max_pct: 0
+        debt_max_pct: 30
+        liquid_min_pct: 70
+
+        max_lock_in_days: 0
+        instant_redemption_required: true
+
+        preferred_products: ["Liquid Fund", "Savings Account", "FD", "Overnight Fund"]
+        avoid_products: ["Equity", "ELSS", "Long Duration Debt"]
+
+        min_months_expenses: 3
+        recommended_months_expenses: 6
+        max_months_expenses: 12
+
+      milestones:
+        - milestone_id: "3_months_built"
+          trigger_type: "months_of_expenses"
+          trigger_value: 3
+          action: "minimum_achieved"
+          message: "Minimum 3 months emergency fund built"
+
+        - milestone_id: "6_months_built"
+          trigger_type: "months_of_expenses"
+          trigger_value: 6
+          action: "target_achieved"
+          message: "Target 6 months emergency fund achieved - redirect contributions"
+
+      regulatory_context:
+        tax_treatment: "interest_taxable"
+        section_80c_eligible: false
+
+    home_purchase:
+      value: "Home Purchase"
+      display_name: "Home Purchase"
+      description: "Goal-dated saving for property down payment"
+
+      characteristics:
+        goal_category: "medium_term"
+        priority_level: "high"
+        flexibility: "low"
+        inflation_sensitivity: "high"
+        liquidity_need: "lump_sum_at_goal"
+
+      planning_profile:
+        typical_horizon_years: 7
+        min_horizon_years: 3
+        contribution_pattern: "aggressive_regular"
+        withdrawal_pattern: "lump_sum"
+        property_inflation_rate_pct: 8
+
+      business_rules:
+        more_than_5_years_equity_pct: 50
+        more_than_5_years_debt_pct: 45
+
+        three_to_5_years_equity_pct: 30
+        three_to_5_years_debt_pct: 65
+
+        less_than_3_years_equity_pct: 10
+        less_than_3_years_debt_pct: 85
+
+        down_payment_pct_of_property: 20
+        buffer_for_registration_pct: 7
+
+        preferred_products: ["Debt Mutual Fund", "Recurring Deposit", "Hybrid Fund"]
+
+      milestones:
+        - milestone_id: "50_pct_down_payment"
+          trigger_pct: 50
+          action: "property_search_start"
+          message: "50% down payment accumulated - can begin property search"
+
+        - milestone_id: "2_years_to_goal"
+          trigger_type: "years_remaining"
+          trigger_value: 2
+          action: "lock_in_gains"
+          message: "2 years to goal - move to capital protection mode"
+
+      regulatory_context:
+        tax_treatment: "standard"
+        section_80c_eligible: false
+        home_loan_benefits_available: true
+
+    tax_saving:
+      value: "Tax Saving"
+      display_name: "Tax Saving"
+      description: "Investments primarily for tax benefit under Section 80C"
+
+      characteristics:
+        goal_category: "annual"
+        priority_level: "medium"
+        flexibility: "medium"
+        inflation_sensitivity: "low"
+        liquidity_need: "post_lock_in"
+
+      planning_profile:
+        typical_horizon_years: 3
+        min_horizon_years: 3
+        contribution_pattern: "annual_before_deadline"
+        withdrawal_pattern: "post_lock_in"
+        annual_limit: 150000
+
+      business_rules:
+        elss_preferred: true
+        min_lock_in_years: 3
+
+        preferred_products: ["ELSS", "PPF", "NPS", "Tax Saving FD"]
+
+        optimal_contribution_months: ["April", "May", "June"]
+        avoid_last_minute: true
+        sip_recommended: true
+
+      milestones:
+        - milestone_id: "80c_limit_reached"
+          trigger_type: "annual_contribution"
+          trigger_value: 150000
+          action: "redirect_to_other_goals"
+          message: "Section 80C limit reached - redirect additional savings"
+
+        - milestone_id: "lock_in_complete"
+          trigger_type: "holding_period"
+          trigger_value: 3
+          action: "review_and_redeem"
+          message: "ELSS lock-in complete - review and decide on redemption"
+
+      regulatory_context:
+        tax_treatment: "80C_deduction"
+        section_80c_eligible: true
+        max_deduction: 150000
+        lock_in_mandatory: true
+
+  derived_context:
+    - name: "is_long_term_goal"
+      type: "boolean"
+      expr: "characteristics.goal_category = 'long_term'"
+      description: "Whether goal requires long-term investment horizon"
+
+    - name: "recommended_equity_allocation"
+      type: "number"
+      expr: "business_rules.equity_max_pct OR business_rules.accumulation_equity_pct"
+      description: "Recommended equity allocation for the goal"
+
+    - name: "is_tax_advantaged"
+      type: "boolean"
+      expr: "regulatory_context.section_80c_eligible = true"
+      description: "Whether goal investments qualify for tax benefits"
+
+    - name: "requires_liquidity"
+      type: "boolean"
+      expr: "characteristics.liquidity_need IN ('immediate', 'high')"
+      description: "Whether goal requires highly liquid investments"
+
+  business_rules:
+    - rule_id: "horizon_allocation_mismatch"
+      description: "Investment horizon must support recommended allocation"
+      condition: "investor.time_horizon < goal.planning_profile.min_horizon_years"
+      severity: "error"
+      message: "{goal} requires minimum {min_years} year horizon; investor has {investor_horizon} years"
+
+    - rule_id: "emergency_fund_priority"
+      description: "Emergency fund should be built before aggressive goals"
+      condition: "goal.value != 'Emergency Fund' AND investor.emergency_fund_months < 3"
+      severity: "warning"
+      message: "Build emergency fund (3+ months) before pursuing {goal}"
+
+    - rule_id: "milestone_alert"
+      description: "Trigger alert when milestone is reached"
+      condition: "progress >= milestone.trigger_pct"
+      severity: "info"
+      message: "Milestone reached: {milestone.message}"
+
+# ===============================================================================
+# SECTION 9: VERIFIED QUERIES
+# ===============================================================================
+
+verified_queries:
+  - name: "retirement_equity_allocation"
+    question: "What is the recommended equity allocation for retirement during accumulation phase?"
+    expected_result_type: "single_value"
+    expected_result_sample: 70
+    verified_at: "2025-01-15"
+    verified_by: "contextos_platform_team"
+
+  - name: "emergency_fund_products"
+    question: "What products are suitable for emergency fund?"
+    expected_result_type: "list"
+    expected_result_sample: ["Liquid Fund", "Savings Account", "FD", "Overnight Fund"]
+    verified_at: "2025-01-15"
+    verified_by: "contextos_platform_team"
+
+  - name: "education_glide_path"
+    question: "What should be the equity allocation for education goal with 5 years remaining?"
+    expected_result_type: "single_value"
+    expected_result_sample: 25
+    verified_at: "2025-01-15"
+    verified_by: "contextos_platform_team"
+
+# ===============================================================================
+# SECTION 10: METADATA
+# ===============================================================================
+
+metadata:
+  created_date: "2025-01-15"
+  updated_date: "2025-01-15"
+  created_by: "contextos_platform_team"
+  tags:
+    - "atom"
+    - "context"
+    - "investment_goal"
+    - "goal_based_investing"
+    - "business_rules"
+    - "wealth_management"
