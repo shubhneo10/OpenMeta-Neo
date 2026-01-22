@@ -1,0 +1,56 @@
+# Dependencies
+node_modules/
+**/node_modules/
+
+# Build outputs
+dist/
+build/
+target/
+*.log
+
+# IDE
+.idea/
+.vscode/
+*.iml
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Yarn
+yarn.lock
+yarn-error.log
+
+# npm
+package-lock.json
+npm-debug.log*
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Coverage
+coverage/
+*.coverage
+.nyc_output/
+
+# Temp files
+*.tmp
+*.temp
+.cache/
+
+# Generated files
+src/generated/
+dist/
+
+# Vite
+node_modules/.vite/
+.eslintcache/
+
+# Playwright
+test-results/
+playwright-report/

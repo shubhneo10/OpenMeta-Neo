@@ -1,0 +1,549 @@
+# ═══════════════════════════════════════════════════════════════════════════════
+# ATOM_CONTEXT_ASSET_CLASS_001
+# Wealth Management Domain - Asset Class Context (Merged Category + InvestmentType)
+# ═══════════════════════════════════════════════════════════════════════════════
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# SECTION 1: IDENTITY
+# ═══════════════════════════════════════════════════════════════════════════════
+
+identity:
+  id: "ATOM_CONTEXT_ASSET_CLASS_001"
+  type: "Atom"
+  subtype: "Context"
+  name: "asset_class_context"
+  display_name: "Asset Class Context"
+
+  synonyms:
+    - "asset class"
+    - "asset category"
+    - "category"
+    - "investment type"
+    - "fund type"
+    - "scheme type"
+    - "equity"
+    - "debt"
+    - "hybrid"
+    - "mutual fund"
+    - "stock"
+    - "bond"
+    - "ELSS"
+    - "PPF"
+
+  description: >
+    Unified business intelligence for asset categories and investment types,
+    merging Category (Equity/Debt/Hybrid) and InvestmentType (Mutual Fund/Stock/
+    ELSS/PPF) into a single context. Contains risk profiles, tax treatment,
+    lock-in rules, and suitability guidelines.
+
+  version: "1.0"
+  owner: "wealth_management_platform"
+  status: "active"
+
+  comments: >
+    This context merges two dimension tables (Category and InvestmentType) to
+    eliminate redundancy and provide comprehensive asset class intelligence.
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# SECTION 1.5: EXECUTION
+# ═══════════════════════════════════════════════════════════════════════════════
+
+execution:
+  type: "sql_assembly"
+  provides: "enrichment"
+  has_data_rows: false
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# SECTION 2: SOURCE
+# ═══════════════════════════════════════════════════════════════════════════════
+
+source:
+  type: "computed"
+
+  capabilities:
+    select: true
+    filter: true
+    aggregate: false
+    join: true
+    sort: true
+
+  refresh_strategy: "static"
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# SECTION 3: GOVERNANCE
+# ═══════════════════════════════════════════════════════════════════════════════
+
+governance:
+  sensitivity: "internal"
+  required_roles: 
+    - "all_authenticated"
+  data_classification: "reference_data"
+  audit_access: false
+  retention_days: -1
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# SECTION 4: QUALITY
+# ═══════════════════════════════════════════════════════════════════════════════
+
+quality:
+  confidence: 1.0
+  confidence_method: "curated_reference_data"
+  freshness_sla_minutes: 10080
+  cache_ttl_seconds: 86400
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# SECTION 5: SEMANTICS
+# ═══════════════════════════════════════════════════════════════════════════════
+
+semantics:
+  business_purpose: >
+    Provides comprehensive business intelligence for asset classes combining
+    category characteristics (equity/debt/hybrid) with investment type specifics
+    (mutual fund/stock/ELSS/PPF). Enables tax-aware recommendations, lock-in
+    compliance, and suitability analysis.
+
+  use_cases:
+    - "tax_planning"
+    - "lock_in_compliance"
+    - "suitability_analysis"
+    - "product_recommendation"
+    - "regulatory_compliance"
+
+  sample_questions:
+    - "What is the lock-in period for ELSS?"
+    - "What tax benefits does PPF offer?"
+    - "Which asset classes are suitable for conservative investors?"
+    - "What is the risk profile of equity mutual funds?"
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# SECTION 8: METADATA
+# ═══════════════════════════════════════════════════════════════════════════════
+
+metadata:
+  created_date: "2025-01-15"
+  updated_date: "2025-01-15"
+  created_by: "contextos_platform_team"
+  tags:
+    - "atom"
+    - "context"
+    - "asset_class"
+    - "category"
+    - "investment_type"
+    - "business_rules"
+    - "wealth_management"
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# SECTION 10: ATTRIBUTES
+# ═══════════════════════════════════════════════════════════════════════════════
+
+attributes:
+  - name: "asset_class_id"
+    display_name: "Asset Class ID"
+    description: "Unique identifier for asset class"
+    type: "string"
+    attribute_type: "identifier"
+    required: true
+    unique: true
+
+  - name: "category"
+    display_name: "Category"
+    synonyms: ["asset category", "broad category"]
+    description: "Broad asset category classification"
+    type: "string"
+    attribute_type: "dimension"
+    required: true
+    filterable: true
+    allowed_values:
+      - "Equity"
+      - "Debt"
+      - "Hybrid"
+      - "Alternative"
+    is_enum: true
+
+  - name: "investment_type"
+    display_name: "Investment Type"
+    synonyms: ["product type", "fund type", "scheme type"]
+    description: "Specific investment product type"
+    type: "string"
+    attribute_type: "dimension"
+    required: true
+    filterable: true
+    allowed_values:
+      - "Mutual Fund"
+      - "Stock"
+      - "Bond"
+      - "ETF"
+      - "ELSS"
+      - "PPF"
+      - "NPS"
+      - "FD"
+      - "Gold"
+      - "Real Estate Fund"
+    is_enum: false
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# SECTION: CONTEXT FIELD - ENRICHMENT MAPPING
+# ═══════════════════════════════════════════════════════════════════════════════
+
+context_field:
+  name: "category"
+  maps_to: "PortfolioHoldings.category"
+  join_type: "left"
+  description: "Links to portfolio holdings category for enrichment with asset class rules"
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# CONTEXT SUBTYPE SECTION - THE BUSINESS INTELLIGENCE
+# ═══════════════════════════════════════════════════════════════════════════════
+
+context:
+  context_type: "business_rules"
+  context_scope: "domain"
+
+  context_values:
+    # ─────────────────────────────────────────────────────────────────────────
+    # EQUITY CATEGORY
+    # ─────────────────────────────────────────────────────────────────────────
+    equity_mutual_fund:
+      value: "Equity Mutual Fund"
+      display_name: "Equity Mutual Fund"
+      description: "Mutual funds investing primarily in equities"
+
+      characteristics:
+        category: "Equity"
+        investment_type: "Mutual Fund"
+        volatility: "high"
+        liquidity: "high"
+        growth_potential: "high"
+        income_potential: "low"
+
+      risk_profile:
+        risk_level: "high"
+        typical_return_range: "10-15%"
+        max_drawdown: 40
+
+      business_rules:
+        allocation_limits:
+          conservative: 30
+          moderate: 60
+          aggressive: 80
+        suitable_for: ["Moderate", "Aggressive"]
+        min_time_horizon_years: 5
+        sip_recommended: true
+
+      regulatory_context:
+        lock_in_days: 0
+        exit_load_period_days: 365
+        exit_load_pct: 1.0
+        tax_treatment:
+          stcg_rate: 15
+          ltcg_rate: 10
+          ltcg_threshold: 100000
+          holding_period_for_ltcg_days: 365
+        tax_benefits:
+          section_80c: false
+          other_benefits: []
+
+    equity_stock:
+      value: "Stock"
+      display_name: "Direct Stock"
+      description: "Direct equity investment in listed stocks"
+
+      characteristics:
+        category: "Equity"
+        investment_type: "Stock"
+        volatility: "very_high"
+        liquidity: "high"
+        growth_potential: "very_high"
+        income_potential: "low_medium"
+
+      risk_profile:
+        risk_level: "very_high"
+        typical_return_range: "variable"
+        max_drawdown: 60
+
+      business_rules:
+        allocation_limits:
+          conservative: 10
+          moderate: 30
+          aggressive: 50
+        suitable_for: ["Aggressive"]
+        min_time_horizon_years: 5
+        requires_expertise: true
+
+      regulatory_context:
+        lock_in_days: 0
+        tax_treatment:
+          stcg_rate: 15
+          ltcg_rate: 10
+          ltcg_threshold: 100000
+          holding_period_for_ltcg_days: 365
+        tax_benefits:
+          section_80c: false
+
+    elss:
+      value: "ELSS"
+      display_name: "ELSS (Tax Saving Fund)"
+      description: "Equity Linked Savings Scheme with tax benefits under 80C"
+
+      characteristics:
+        category: "Equity"
+        investment_type: "ELSS"
+        volatility: "high"
+        liquidity: "low"
+        growth_potential: "high"
+        income_potential: "low"
+
+      risk_profile:
+        risk_level: "high"
+        typical_return_range: "10-15%"
+        max_drawdown: 40
+
+      business_rules:
+        allocation_limits:
+          conservative: 20
+          moderate: 40
+          aggressive: 50
+        suitable_for: ["Conservative", "Moderate", "Aggressive"]
+        min_time_horizon_years: 3
+        sip_recommended: true
+        mandatory_for_tax_planning: true
+
+      regulatory_context:
+        lock_in_days: 1095  # 3 years mandatory
+        exit_load_pct: 0
+        tax_treatment:
+          stcg_rate: 15
+          ltcg_rate: 10
+          ltcg_threshold: 100000
+          holding_period_for_ltcg_days: 365
+        tax_benefits:
+          section_80c: true
+          max_deduction: 150000
+
+    # ─────────────────────────────────────────────────────────────────────────
+    # DEBT CATEGORY
+    # ─────────────────────────────────────────────────────────────────────────
+    debt_mutual_fund:
+      value: "Debt Mutual Fund"
+      display_name: "Debt Mutual Fund"
+      description: "Mutual funds investing in fixed income securities"
+
+      characteristics:
+        category: "Debt"
+        investment_type: "Mutual Fund"
+        volatility: "low"
+        liquidity: "high"
+        growth_potential: "low"
+        income_potential: "high"
+
+      risk_profile:
+        risk_level: "low"
+        typical_return_range: "6-8%"
+        max_drawdown: 10
+
+      business_rules:
+        allocation_limits:
+          conservative: 60
+          moderate: 40
+          aggressive: 20
+        suitable_for: ["Conservative", "Moderate", "Aggressive"]
+        min_time_horizon_years: 1
+        sip_recommended: false
+
+      regulatory_context:
+        lock_in_days: 0
+        exit_load_period_days: 90
+        exit_load_pct: 0.25
+        tax_treatment:
+          stcg_rate: "as_per_slab"
+          ltcg_rate: "as_per_slab"
+          holding_period_for_ltcg_days: 1095
+          indexation_benefit: false
+        tax_benefits:
+          section_80c: false
+
+    ppf:
+      value: "PPF"
+      display_name: "Public Provident Fund"
+      description: "Government-backed long-term savings with guaranteed returns"
+
+      characteristics:
+        category: "Debt"
+        investment_type: "PPF"
+        volatility: "none"
+        liquidity: "very_low"
+        growth_potential: "low"
+        income_potential: "fixed"
+
+      risk_profile:
+        risk_level: "very_low"
+        typical_return_range: "7-8%"
+        max_drawdown: 0
+        government_backed: true
+
+      business_rules:
+        allocation_limits:
+          conservative: 30
+          moderate: 20
+          aggressive: 10
+        suitable_for: ["Conservative", "Moderate"]
+        min_time_horizon_years: 15
+        mandatory_contribution_period: 15
+        annual_contribution_limit: 150000
+
+      regulatory_context:
+        lock_in_days: 5475  # 15 years
+        partial_withdrawal_after_years: 7
+        loan_facility_after_years: 3
+        tax_treatment:
+          interest_taxable: false
+          maturity_taxable: false
+          classification: "EEE"
+        tax_benefits:
+          section_80c: true
+          max_deduction: 150000
+
+    # ─────────────────────────────────────────────────────────────────────────
+    # HYBRID CATEGORY
+    # ─────────────────────────────────────────────────────────────────────────
+    hybrid_fund:
+      value: "Hybrid Fund"
+      display_name: "Hybrid/Balanced Fund"
+      description: "Funds investing in both equity and debt"
+
+      characteristics:
+        category: "Hybrid"
+        investment_type: "Mutual Fund"
+        volatility: "medium"
+        liquidity: "high"
+        growth_potential: "medium"
+        income_potential: "medium"
+
+      risk_profile:
+        risk_level: "medium"
+        typical_return_range: "8-12%"
+        max_drawdown: 25
+
+      business_rules:
+        allocation_limits:
+          conservative: 40
+          moderate: 50
+          aggressive: 40
+        suitable_for: ["Conservative", "Moderate", "Aggressive"]
+        min_time_horizon_years: 3
+        sip_recommended: true
+
+      regulatory_context:
+        lock_in_days: 0
+        exit_load_period_days: 365
+        exit_load_pct: 1.0
+        tax_treatment:
+          classification_threshold: 65
+          equity_oriented: "if equity > 65%"
+          debt_oriented: "if equity <= 65%"
+        tax_benefits:
+          section_80c: false
+
+    nps:
+      value: "NPS"
+      display_name: "National Pension System"
+      description: "Government pension scheme with equity and debt options"
+
+      characteristics:
+        category: "Hybrid"
+        investment_type: "NPS"
+        volatility: "medium"
+        liquidity: "very_low"
+        growth_potential: "medium"
+        income_potential: "pension"
+
+      risk_profile:
+        risk_level: "medium"
+        typical_return_range: "8-10%"
+        max_drawdown: 20
+        government_regulated: true
+
+      business_rules:
+        allocation_limits:
+          conservative: 20
+          moderate: 30
+          aggressive: 30
+        suitable_for: ["Conservative", "Moderate", "Aggressive"]
+        min_time_horizon_years: "till_retirement"
+        retirement_mandatory: true
+
+      regulatory_context:
+        lock_in_days: "till_60"
+        partial_withdrawal_conditions: ["specific_purposes_only"]
+        tax_treatment:
+          contribution_deduction: true
+          annuity_taxable: true
+          lump_sum_tax_free_pct: 60
+        tax_benefits:
+          section_80ccd_1: true
+          section_80ccd_1b: true
+          max_80ccd_1b: 50000
+          employer_contribution_80ccd_2: true
+
+  derived_context:
+    - name: "has_lock_in"
+      type: "boolean"
+      expr: "regulatory_context.lock_in_days > 0"
+      description: "Whether investment has mandatory lock-in period"
+      parameters: []
+
+    - name: "is_tax_saving"
+      type: "boolean"
+      expr: "regulatory_context.tax_benefits.section_80c = true"
+      description: "Whether investment qualifies for 80C deduction"
+      parameters: []
+
+    - name: "is_suitable_for_risk"
+      type: "boolean"
+      expr: "risk_tolerance IN business_rules.suitable_for"
+      description: "Whether asset class suits given risk tolerance"
+      parameters: ["risk_tolerance"]
+
+  business_rules:
+    - rule_id: "lock_in_disclosure"
+      description: "Disclose lock-in requirements before investment"
+      condition: "regulatory_context.lock_in_days > 0"
+      severity: "info"
+      message: "{investment_type} has mandatory lock-in of {lock_in_days} days"
+
+    - rule_id: "horizon_lock_in_match"
+      description: "Verify investor horizon exceeds lock-in"
+      condition: "investor.time_horizon * 365 < regulatory_context.lock_in_days"
+      severity: "error"
+      message: "Investment horizon ({horizon} years) is less than lock-in period ({lock_in_days} days)"
+
+    - rule_id: "contribution_limit_check"
+      description: "Check annual contribution limits"
+      condition: "annual_investment > regulatory_context.annual_contribution_limit"
+      severity: "warning"
+      message: "Annual investment exceeds limit of ₹{limit} for {investment_type}"
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# SECTION 9: VERIFIED QUERIES
+# ═══════════════════════════════════════════════════════════════════════════════
+
+verified_queries:
+  - name: "elss_lock_in"
+    question: "What is the lock-in period for ELSS?"
+    expected_result_type: "single_value"
+    expected_result_sample: "3 years (1095 days)"
+    verified_at: "2025-01-15"
+    verified_by: "contextos_platform_team"
+
+  - name: "tax_saving_options"
+    question: "Which investment types offer 80C tax benefits?"
+    expected_result_type: "list"
+    verified_at: "2025-01-15"
+    verified_by: "contextos_platform_team"
+
+  - name: "ppf_benefits"
+    question: "What are the tax benefits of PPF?"
+    expected_result_type: "single_value"
+    verified_at: "2025-01-15"
+    verified_by: "contextos_platform_team"
+ 
